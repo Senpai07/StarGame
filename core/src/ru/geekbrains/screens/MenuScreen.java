@@ -9,7 +9,7 @@ import com.badlogic.gdx.math.Vector2;
 import ru.geekbrains.base.BaseScreen;
 
 public class MenuScreen extends BaseScreen {
-    private static final int SPEED = 10;
+    private static final int SPEED = 7;
     private Texture background;
     private Texture spaceShip;
     private Sprite backgroundSprite;
@@ -48,22 +48,20 @@ public class MenuScreen extends BaseScreen {
     @Override
     public void render(float delta) {
         super.render(delta);
-        if (distanceVector.len() > SPEED - 1) {
+        if (distanceVector.len() > SPEED) {
             directionVector.set(distanceVector);
             directionVector.nor();
-            if (distanceVector.len() < SPEED) {
-                positionSpaceShipVector.set(targetVector);
-            } else {
-                directionVector.scl(speedSpaceShipVector);
-                positionSpaceShipVector.add(directionVector);
-            }
-            spaceShipSprite.setPosition(positionSpaceShipVector.x, positionSpaceShipVector.y);
+            directionVector.scl(speedSpaceShipVector);
+            positionSpaceShipVector.add(directionVector);
             distanceVector = targetVector.cpy().sub(positionSpaceShipVector);
 //            System.out.printf("positionSpaceShipVector (%f, %f)%n", positionSpaceShipVector.x, positionSpaceShipVector.y);
 //            System.out.printf("targetVector (%f, %f)%n", targetVector.x, targetVector.y);
 //            System.out.printf("distanceVector (%f, %f)%n", distanceVector.x, distanceVector.y);
 //            System.out.println("distanceVector.len() = " + distanceVector.len());
+        } else {
+            positionSpaceShipVector.set(targetVector);
         }
+        spaceShipSprite.setPosition(positionSpaceShipVector.x, positionSpaceShipVector.y);
         batch.begin();
         backgroundSprite.draw(batch);
         spaceShipSprite.draw(batch);
@@ -79,9 +77,10 @@ public class MenuScreen extends BaseScreen {
     private void StartMove(int screenX, int screenY) {
         targetVector.set(screenX - spaceShipSprite.getHeight() / 2,
                 Gdx.graphics.getHeight() - screenY - spaceShipSprite.getHeight() / 2);
-        System.out.printf("Координаты targetVector (%f, %f)%n", targetVector.x, targetVector.y);
+        System.out.printf("targetVector (%f, %f)%n", targetVector.x, targetVector.y);
         distanceVector = targetVector.cpy().sub(positionSpaceShipVector);
-        System.out.printf("Координаты distanceVector (%f, %f)%n", distanceVector.x, distanceVector.y);
+        System.out.printf("positionSpaceShipVector (%f, %f)%n", positionSpaceShipVector.x, positionSpaceShipVector.y);
+        System.out.printf("distanceVector (%f, %f)%n", distanceVector.x, distanceVector.y);
 
         System.out.println("distanceVector.len() = " + distanceVector.len());
     }
