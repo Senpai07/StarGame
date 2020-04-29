@@ -96,4 +96,10 @@ public class MenuScreen extends BaseScreen {
         StartMove(screenX, screenY);
         return super.touchDragged(screenX, screenY, pointer);
     }
+
+    @Override
+    public void resize(int width, int height) {
+        backgroundSprite.setSize(width, height);
+        super.resize(width, height);
+    }
 }
