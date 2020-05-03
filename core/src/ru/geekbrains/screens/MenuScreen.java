@@ -48,18 +48,12 @@ public class MenuScreen extends BaseScreen {
     @Override
     public void render(float delta) {
         super.render(delta);
-        if (distanceVector.len() > SPEED) {
-            directionVector.set(distanceVector);
-            directionVector.nor();
-            directionVector.scl(speedSpaceShipVector);
+        distanceVector.set(targetVector);
+        if (distanceVector.sub(positionSpaceShipVector).len() > SPEED) {
             positionSpaceShipVector.add(directionVector);
-            distanceVector = targetVector.cpy().sub(positionSpaceShipVector);
-//            System.out.printf("positionSpaceShipVector (%f, %f)%n", positionSpaceShipVector.x, positionSpaceShipVector.y);
-//            System.out.printf("targetVector (%f, %f)%n", targetVector.x, targetVector.y);
-//            System.out.printf("distanceVector (%f, %f)%n", distanceVector.x, distanceVector.y);
-//            System.out.println("distanceVector.len() = " + distanceVector.len());
         } else {
             positionSpaceShipVector.set(targetVector);
+            directionVector.setZero();
         }
         spaceShipSprite.setPosition(positionSpaceShipVector.x, positionSpaceShipVector.y);
         batch.begin();
@@ -77,12 +71,11 @@ public class MenuScreen extends BaseScreen {
     private void StartMove(int screenX, int screenY) {
         targetVector.set(screenX - spaceShipSprite.getHeight() / 2,
                 Gdx.graphics.getHeight() - screenY - spaceShipSprite.getHeight() / 2);
-        System.out.printf("targetVector (%f, %f)%n", targetVector.x, targetVector.y);
-        distanceVector = targetVector.cpy().sub(positionSpaceShipVector);
-        System.out.printf("positionSpaceShipVector (%f, %f)%n", positionSpaceShipVector.x, positionSpaceShipVector.y);
-        System.out.printf("distanceVector (%f, %f)%n", distanceVector.x, distanceVector.y);
-
-        System.out.println("distanceVector.len() = " + distanceVector.len());
+        distanceVector.set(targetVector);
+        distanceVector.sub(positionSpaceShipVector);
+        directionVector.set(distanceVector);
+        directionVector.nor();
+        directionVector.scl(speedSpaceShipVector);
     }
 
     @Override
