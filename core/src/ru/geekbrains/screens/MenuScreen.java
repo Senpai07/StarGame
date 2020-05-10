@@ -15,7 +15,6 @@ public class MenuScreen extends BaseScreen {
     private Sprite backgroundSprite;
     private Sprite spaceShipSprite;
     private Vector2 positionSpaceShipVector;
-    private Vector2 speedSpaceShipVector;
     private Vector2 targetVector;
     private Vector2 directionVector;
     private Vector2 distanceVector;
@@ -39,7 +38,6 @@ public class MenuScreen extends BaseScreen {
         spaceShipSprite.setSize(200, 200);
 
         positionSpaceShipVector = new Vector2();
-        speedSpaceShipVector = new Vector2(SPEED, SPEED);
         targetVector = new Vector2();
         directionVector = new Vector2();
         distanceVector = new Vector2();
@@ -68,25 +66,24 @@ public class MenuScreen extends BaseScreen {
         super.dispose();
     }
 
-    private void StartMove(int screenX, int screenY) {
+    private void startMove(int screenX, int screenY) {
         targetVector.set(screenX - spaceShipSprite.getHeight() / 2,
                 Gdx.graphics.getHeight() - screenY - spaceShipSprite.getHeight() / 2);
         distanceVector.set(targetVector);
         distanceVector.sub(positionSpaceShipVector);
         directionVector.set(distanceVector);
-        directionVector.nor();
-        directionVector.scl(speedSpaceShipVector);
+        directionVector.setLength(SPEED);
     }
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        StartMove(screenX, screenY);
+        startMove(screenX, screenY);
         return super.touchDown(screenX, screenY, pointer, button);
     }
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
-        StartMove(screenX, screenY);
+        startMove(screenX, screenY);
         return super.touchDragged(screenX, screenY, pointer);
     }
 
