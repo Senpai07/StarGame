@@ -15,7 +15,7 @@ import ru.geekbrains.sprites.Logo;
 import ru.geekbrains.sprites.Star;
 
 public class MenuScreen extends BaseScreen {
-    private static final int COUNT_STARS = 256;
+    private static final int COUNT_STARS = 128;
     private final Game game;
     private Texture background;
     private Background backgroundSprite;

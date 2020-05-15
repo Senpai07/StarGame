@@ -9,14 +9,14 @@ import com.badlogic.gdx.math.Vector2;
 import ru.geekbrains.base.BaseScreen;
 import ru.geekbrains.math.Rect;
 import ru.geekbrains.sprites.Background;
-import ru.geekbrains.sprites.SpaceShip;
+import ru.geekbrains.sprites.MainShip;
 import ru.geekbrains.sprites.Star;
 
 public class GameScreen extends BaseScreen {
-    private static final int COUNT_STARS = 256;
+    private static final int COUNT_STARS = 64;
     private Texture background;
     private Background backgroundSprite;
-    private SpaceShip spaceShipSprite;
+    private MainShip mainShipSprite;
     private TextureAtlas mainAtlas;
     private Star[] stars;
 
@@ -27,24 +27,20 @@ public class GameScreen extends BaseScreen {
         background = new Texture("StarsSky_v1.jpg");
         backgroundSprite = new Background(background);
 
-        mainAtlas = new TextureAtlas(Gdx.files.internal("textures/mainAtlas.tpack"));
+        mainAtlas = new TextureAtlas("textures/mainAtlas.tpack");
 
         stars = new Star[COUNT_STARS];
         for (int i = 0; i < stars.length; i++) {
             stars[i] = new Star(mainAtlas);
         }
-        TextureRegion spaceShipTextureRegion = mainAtlas.findRegion("main_ship").split(
-                mainAtlas.findRegion("main_ship").originalWidth / 2,
-                mainAtlas.findRegion("main_ship").originalHeight)[0][1];
 
-        spaceShipSprite = new SpaceShip(spaceShipTextureRegion);
-        spaceShipSprite.pos.set(0, 0);
+        mainShipSprite = new MainShip(mainAtlas);
     }
 
     @Override
     public void resize(Rect worldBounds) {
         backgroundSprite.resize(worldBounds);
-        spaceShipSprite.resize(worldBounds);
+        mainShipSprite.resize(worldBounds);
         for (Star star : stars) {
             star.resize(worldBounds);
         }
@@ -58,7 +54,7 @@ public class GameScreen extends BaseScreen {
     }
 
     private void update(float delta) {
-        spaceShipSprite.update(delta);
+        mainShipSprite.update(delta);
         for (Star star : stars) {
             star.update(delta);
         }
@@ -70,7 +66,7 @@ public class GameScreen extends BaseScreen {
         for (Star star : stars) {
             star.draw(batch);
         }
-        spaceShipSprite.draw(batch);
+        mainShipSprite.draw(batch);
         batch.end();
     }
 
@@ -84,18 +80,29 @@ public class GameScreen extends BaseScreen {
 
     @Override
     public boolean touchDown(Vector2 touch, int pointer, int button) {
-        spaceShipSprite.touchDown(touch, pointer, button);
+        mainShipSprite.touchDown(touch, pointer, button);
         return false;
     }
 
     @Override
     public boolean touchUp(Vector2 touch, int pointer, int button) {
+        mainShipSprite.touchUp(touch, pointer, button);
         return false;
     }
 
     @Override
     public boolean touchDragged(Vector2 touch, int pointer) {
-        spaceShipSprite.touchDragged(touch, pointer);
+        mainShipSprite.touchDragged(touch, pointer);
+        return false;
+    }
+
+    @Override
+    public boolean keyDown(int keycode) {
+        return false;
+    }
+
+    @Override
+    public boolean keyUp(int keycode) {
         return false;
     }
 }
