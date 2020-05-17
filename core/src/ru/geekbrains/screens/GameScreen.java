@@ -1,9 +1,10 @@
 package ru.geekbrains.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
 import ru.geekbrains.base.BaseScreen;
@@ -21,6 +22,8 @@ public class GameScreen extends BaseScreen {
     private MainShip mainShipSprite;
     private TextureAtlas mainAtlas;
     private BulletPool bulletPool;
+    private Sound shootSound;
+    private Music music;
 
     @Override
     public void show() {
@@ -36,7 +39,11 @@ public class GameScreen extends BaseScreen {
             stars[i] = new Star(mainAtlas);
         }
         bulletPool = new BulletPool();
-        mainShipSprite = new MainShip(mainAtlas, bulletPool);
+        shootSound = Gdx.audio.newSound(Gdx.files.internal("sounds/laser.wav"));
+        mainShipSprite = new MainShip(mainAtlas, bulletPool, shootSound);
+        music = Gdx.audio.newMusic(Gdx.files.internal("sounds/music.mp3"));
+        music.setLooping(true);
+        music.play();
     }
 
     @Override
@@ -85,6 +92,8 @@ public class GameScreen extends BaseScreen {
         background.dispose();
         mainAtlas.dispose();
         bulletPool.dispose();
+        shootSound.dispose();
+        music.dispose();
         super.dispose();
     }
 
