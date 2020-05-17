@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Vector2;
 
 import ru.geekbrains.base.BaseScreen;
 import ru.geekbrains.math.Rect;
+import ru.geekbrains.pools.BulletPool;
 import ru.geekbrains.sprites.Background;
 import ru.geekbrains.sprites.MainShip;
 import ru.geekbrains.sprites.Star;
@@ -16,9 +17,10 @@ public class GameScreen extends BaseScreen {
     private static final int COUNT_STARS = 64;
     private Texture background;
     private Background backgroundSprite;
+    private Star[] stars;
     private MainShip mainShipSprite;
     private TextureAtlas mainAtlas;
-    private Star[] stars;
+    private BulletPool bulletPool;
 
     @Override
     public void show() {
@@ -33,8 +35,8 @@ public class GameScreen extends BaseScreen {
         for (int i = 0; i < stars.length; i++) {
             stars[i] = new Star(mainAtlas);
         }
-
-        mainShipSprite = new MainShip(mainAtlas);
+        bulletPool = new BulletPool();
+        mainShipSprite = new MainShip(mainAtlas, bulletPool);
     }
 
     @Override
@@ -50,14 +52,20 @@ public class GameScreen extends BaseScreen {
     public void render(float delta) {
         super.render(delta);
         update(delta);
+        free();
         draw();
     }
 
     private void update(float delta) {
-        mainShipSprite.update(delta);
         for (Star star : stars) {
             star.update(delta);
         }
+        bulletPool.updateActiveSprites(delta);
+        mainShipSprite.update(delta);
+    }
+
+    private void free() {
+        bulletPool.freeAllDestroyed();
     }
 
     private void draw() {
@@ -66,6 +74,7 @@ public class GameScreen extends BaseScreen {
         for (Star star : stars) {
             star.draw(batch);
         }
+        bulletPool.drawActiveSprites(batch);
         mainShipSprite.draw(batch);
         batch.end();
     }
@@ -75,6 +84,7 @@ public class GameScreen extends BaseScreen {
     public void dispose() {
         background.dispose();
         mainAtlas.dispose();
+        bulletPool.dispose();
         super.dispose();
     }
 
@@ -98,11 +108,13 @@ public class GameScreen extends BaseScreen {
 
     @Override
     public boolean keyDown(int keycode) {
+        mainShipSprite.keyDown(keycode);
         return false;
     }
 
     @Override
     public boolean keyUp(int keycode) {
+        mainShipSprite.keyUp(keycode);
         return false;
     }
 }
