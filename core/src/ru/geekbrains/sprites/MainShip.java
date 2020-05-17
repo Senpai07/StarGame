@@ -8,7 +8,6 @@ import com.badlogic.gdx.math.Vector2;
 
 import ru.geekbrains.base.Sprite;
 import ru.geekbrains.math.Rect;
-import ru.geekbrains.math.Rnd;
 import ru.geekbrains.pools.BulletPool;
 
 public class MainShip extends Sprite {
@@ -37,12 +36,12 @@ public class MainShip extends Sprite {
         super(textureAtlas.findRegion("main_ship"), 1, 2, 2);
         this.bulletPool = bulletPool;
         bulletRegion = textureAtlas.findRegion("bulletMainShip");
-        bulletSpeed = new Vector2(0, 0.7f);
+        bulletSpeed = new Vector2(0f, 0.7f);
         targetVector = new Vector2();
         speedVector = new Vector2();
         distanceVector = new Vector2();
         moveRightVector = new Vector2(0.5f, 0f);
-        animateInterval = Rnd.nextFloat(0.2f, 0.2f);
+        animateInterval = 0.2f;
         this.shootSound = shootSound;
     }
 

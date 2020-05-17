@@ -144,4 +144,8 @@ public class BaseScreen implements Screen, InputProcessor {
     public Rect getScreenBounds() {
         return screenBounds;
     }
+
+    public Rect getWorldBounds() {
+        return worldBounds;
+    }
 }
