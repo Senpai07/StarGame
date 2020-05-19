@@ -1,6 +1,7 @@
 package ru.geekbrains.sprites;
 
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -11,10 +12,11 @@ import ru.geekbrains.pools.BulletPool;
 
 public class MainShip extends Sprite {
 
-    private static final float SPEED = 0.5f;
+    private static final float SPEED = 0.015f;
     private static final float MARGIN = 0.05f;
     private static final float SIZE_SHIP = 0.15f;
     private final Vector2 moveRightVector;
+    private final Sound shootSound;
     private Vector2 targetVector;
     private Vector2 distanceVector;
     private Vector2 speedVector;
@@ -26,16 +28,21 @@ public class MainShip extends Sprite {
     private BulletPool bulletPool;
     private TextureRegion bulletRegion;
     private Vector2 bulletSpeed;
+    private float animateTimer;
+    private float animateInterval;
 
-    public MainShip(TextureAtlas textureAtlas, BulletPool bulletPool) {
+
+    public MainShip(TextureAtlas textureAtlas, BulletPool bulletPool, Sound shootSound) {
         super(textureAtlas.findRegion("main_ship"), 1, 2, 2);
         this.bulletPool = bulletPool;
         bulletRegion = textureAtlas.findRegion("bulletMainShip");
-        bulletSpeed = new Vector2(0, 0.5f);
+        bulletSpeed = new Vector2(0f, 0.7f);
         targetVector = new Vector2();
         speedVector = new Vector2();
         distanceVector = new Vector2();
         moveRightVector = new Vector2(0.5f, 0f);
+        animateInterval = 0.2f;
+        this.shootSound = shootSound;
     }
 
     @Override
@@ -66,6 +73,11 @@ public class MainShip extends Sprite {
                 moveStop();
                 setRight(worldBounds.getRight());
             }
+        }
+        animateTimer += delta;
+        if (animateTimer >= animateInterval) {
+            shoot();
+            animateTimer = 0f;
         }
     }
 
@@ -116,9 +128,6 @@ public class MainShip extends Sprite {
                 pressedRight = true;
                 moveRight();
                 break;
-            case Input.Keys.UP:
-                shoot();
-                break;
         }
         return false;
     }
@@ -149,5 +158,6 @@ public class MainShip extends Sprite {
     private void shoot() {
         Bullet bullet = bulletPool.obtain();
         bullet.set(this, bulletRegion, pos, bulletSpeed, 0.01f, worldBounds, 1);
+        shootSound.play(0.3f);
     }
 }
