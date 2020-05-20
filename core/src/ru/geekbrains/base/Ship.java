@@ -57,7 +57,7 @@ public class Ship extends Sprite {
     public void update(float delta) {
         super.update(delta);
         reloadTimer += delta;
-        if (reloadTimer >= reloadInterval) {
+        if ((reloadTimer >= reloadInterval) && (getTop() <= worldBounds.getTop())) {
             shoot();
             reloadTimer = 0f;
         }
