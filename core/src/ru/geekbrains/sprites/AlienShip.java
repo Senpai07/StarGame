@@ -11,8 +11,11 @@ import ru.geekbrains.pools.ExplosionPool;
 
 public class AlienShip extends Ship {
 
+    private Vector2 fastSpeed;
+
     public AlienShip(BulletPool bulletPool, ExplosionPool explosionPool, Rect worldBounds, Sound sound) {
         super(bulletPool, explosionPool, worldBounds, sound);
+        fastSpeed = new Vector2(0, -0.5f);
     }
 
     public void set(TextureRegion[] regions,
@@ -40,7 +43,11 @@ public class AlienShip extends Ship {
     @Override
     public void update(float delta) {
         super.update(delta);
-        pos.mulAdd(speedVector, delta);
+        if (getTop() > worldBounds.getTop()) {
+            pos.mulAdd(fastSpeed, delta);
+        } else {
+            pos.mulAdd(speedVector, delta);
+        }
         if (getBottom() <= worldBounds.getBottom()) {
             destroy();
         }
