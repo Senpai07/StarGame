@@ -1,7 +1,6 @@
 package ru.geekbrains.sprites;
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 import ru.geekbrains.base.Sprite;
 import ru.geekbrains.math.Rect;

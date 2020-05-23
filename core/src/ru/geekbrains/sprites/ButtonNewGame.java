@@ -1,6 +1,5 @@
 package ru.geekbrains.sprites;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 
 import ru.geekbrains.base.ScaledButton;
