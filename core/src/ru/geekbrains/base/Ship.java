@@ -12,6 +12,8 @@ import ru.geekbrains.sprites.Explosion;
 
 public class Ship extends Sprite {
 
+    private static final float DAMAGE_ANIMATE_INTERVAL = 0.1f;
+
     protected Vector2 moveVector;
     protected Vector2 speedVector;
 
@@ -21,6 +23,7 @@ public class Ship extends Sprite {
     protected BulletPool bulletPool;
     protected TextureRegion bulletRegion;
     protected Vector2 bulletSpeed;
+    protected Vector2 bulletPosition;
     protected float bulletHeight;
     protected int bulletDamage;
 
@@ -31,10 +34,15 @@ public class Ship extends Sprite {
 
     protected int hp;
 
+    private float damageAnimateTimer;
+
     public Ship(TextureRegion region, int rows, int cols, int frames) {
         super(region, rows, cols, frames);
-        speedVector = new Vector2();
         moveVector = new Vector2();
+        speedVector = new Vector2();
+        bulletSpeed = new Vector2();
+        bulletPosition = new Vector2();
+        damageAnimateTimer = DAMAGE_ANIMATE_INTERVAL;
     }
 
     public Ship(BulletPool bulletPool, ExplosionPool explosionPool, Rect worldBounds, Sound sound) {
@@ -45,6 +53,8 @@ public class Ship extends Sprite {
         speedVector = new Vector2();
         moveVector = new Vector2();
         bulletSpeed = new Vector2();
+        bulletPosition = new Vector2();
+        damageAnimateTimer = DAMAGE_ANIMATE_INTERVAL;
     }
 
     @Override
@@ -56,10 +66,9 @@ public class Ship extends Sprite {
     @Override
     public void update(float delta) {
         super.update(delta);
-        reloadTimer += delta;
-        if ((reloadTimer >= reloadInterval) && (getTop() <= worldBounds.getTop())) {
-            shoot();
-            reloadTimer = 0f;
+        damageAnimateTimer += delta;
+        if (damageAnimateTimer >= DAMAGE_ANIMATE_INTERVAL) {
+            frame = 0;
         }
     }
 
@@ -71,8 +80,30 @@ public class Ship extends Sprite {
 
     private void shoot() {
         Bullet bullet = bulletPool.obtain();
-        bullet.set(this, bulletRegion, pos, bulletSpeed, bulletHeight, worldBounds, bulletDamage);
+        bullet.set(this, bulletRegion, bulletPosition, bulletSpeed, bulletHeight, worldBounds, bulletDamage);
         shootSound.play(0.3f);
+    }
+
+    public void damage(int bulletDamage) {
+        damageAnimateTimer = 0f;
+        frame = 1;
+        hp -= bulletDamage;
+        if (hp <= 0) {
+            hp = 0;
+            destroy();
+        }
+    }
+
+    public int getBulletDamage() {
+        return bulletDamage;
+    }
+
+    protected void autoShoot(float delta) {
+        reloadTimer += delta;
+        if (reloadTimer >= reloadInterval) {
+            shoot();
+            reloadTimer = 0f;
+        }
     }
 
     private void boom() {

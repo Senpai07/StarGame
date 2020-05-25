@@ -15,7 +15,7 @@ public class MainShip extends Ship {
     private static final float SPEED = 0.015f;
     private static final float MARGIN = 0.05f;
     private static final float SIZE_SHIP = 0.15f;
-    private static final int HP = 100;
+    private static final int HP = 20;
 
     private Vector2 targetVector;
     private Vector2 distanceVector;
@@ -51,6 +51,8 @@ public class MainShip extends Ship {
     @Override
     public void update(float delta) {
         super.update(delta);
+        bulletPosition.set(pos.x, pos.y + getHalfHeight());
+        autoShoot(delta);
         if (startTouchMove) {
             distanceVector.set(targetVector);
             if (distanceVector.sub(pos).len() > SPEED) {
@@ -75,6 +77,20 @@ public class MainShip extends Ship {
 
     public void dispose() {
         shootSound.dispose();
+    }
+
+    public boolean isBulletCollision(Bullet bullet) {
+        return !(bullet.getRight() < getLeft()
+                || bullet.getLeft() > getRight()
+                || bullet.getBottom() > pos.y
+                || bullet.getTop() < getBottom()
+        );
+    }
+
+    public void getStarted() {
+        moveStop();
+        hp = HP;
+        setBottom(worldBounds.getBottom() + MARGIN);
     }
 
     @Override
