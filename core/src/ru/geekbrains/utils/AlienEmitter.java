@@ -49,6 +49,8 @@ public class AlienEmitter {
 
     private final AlienShipPool alienShipPool;
 
+    private int level = 1;
+
     public AlienEmitter(TextureAtlas atlas, AlienShipPool alienShipPool) {
         TextureRegion alien0 = atlas.findRegion("enemy0");
         this.alienSmallRegions = Regions.split(alien0, 1, 2, 2);
@@ -67,7 +69,8 @@ public class AlienEmitter {
         this.worldBounds = worldBounds;
     }
 
-    public void generate(float delta) {
+    public void generate(float delta, int frags) {
+        level = frags / 30 + 1;
         generateTimer += delta;
         if (generateTimer >= GENERATE_INTERVAL) {
             generateTimer = 0f;
@@ -80,7 +83,7 @@ public class AlienEmitter {
                         bulletRegion,
                         ALIEN_SMALL_BULLET_HEIGHT,
                         ALIEN_SMALL_BULLET_VY,
-                        ALIEN_SMALL_BULLET_DAMAGE,
+                        ALIEN_SMALL_BULLET_DAMAGE+level,
                         ALIEN_SMALL_RELOAD_INTERVAL,
                         ALIEN_SMALL_HP,
                         ALIEN_SMALL_HEIGHT
@@ -92,7 +95,7 @@ public class AlienEmitter {
                         bulletRegion,
                         ALIEN_MEDIUM_BULLET_HEIGHT,
                         ALIEN_MEDIUM_BULLET_VY,
-                        ALIEN_MEDIUM_BULLET_DAMAGE,
+                        ALIEN_MEDIUM_BULLET_DAMAGE+level,
                         ALIEN_MEDIUM_RELOAD_INTERVAL,
                         ALIEN_MEDIUM_HP,
                         ALIEN_MEDIUM_HEIGHT
@@ -104,7 +107,7 @@ public class AlienEmitter {
                         bulletRegion,
                         ALIEN_BIG_BULLET_HEIGHT,
                         ALIEN_BIG_BULLET_VY,
-                        ALIEN_BIG_BULLET_DAMAGE,
+                        ALIEN_BIG_BULLET_DAMAGE+level,
                         ALIEN_BIG_RELOAD_INTERVAL,
                         ALIEN_BIG_HP,
                         ALIEN_BIG_HEIGHT
@@ -113,5 +116,9 @@ public class AlienEmitter {
             alienShip.pos.x = Rnd.nextFloat(worldBounds.getLeft() + alienShip.getHalfWidth(), worldBounds.getRight() - alienShip.getHalfWidth());
             alienShip.setBottom(worldBounds.getTop());
         }
+    }
+
+    public int getLevel() {
+        return level;
     }
 }

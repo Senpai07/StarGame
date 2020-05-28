@@ -9,8 +9,11 @@ import ru.geekbrains.screens.GameScreen;
 public class ButtonNewGame extends ScaledButton {
 
     private static final float MARGIN = 0.05f;
+    private static final float ANIMATE_INTERVAL = 1f;
 
     private GameScreen gameScreen;
+    private float animateTimer;
+    private boolean scaleUp = true;
 
     public ButtonNewGame(TextureAtlas atlas, GameScreen gameScreen) {
         super(atlas.findRegion("button_new_game"));
@@ -18,9 +21,24 @@ public class ButtonNewGame extends ScaledButton {
     }
 
     @Override
+    public void update(float delta) {
+        animateTimer += delta;
+        if (animateTimer >= ANIMATE_INTERVAL) {
+            animateTimer = 0f;
+            scaleUp = !scaleUp;
+        }
+        if (scaleUp) {
+            setScale(getScale() + 0.001f);
+        }
+        else  {
+            setScale(getScale() - 0.001f);
+        }
+    }
+
+    @Override
     public void resize(Rect worldBounds) {
         setHeightProportion(0.05f);
-        setTop(-0.2f);
+        setTop(-0.1f);
     }
 
     @Override
