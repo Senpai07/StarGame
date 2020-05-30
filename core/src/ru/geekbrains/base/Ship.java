@@ -49,7 +49,7 @@ public class Ship extends Sprite {
         this.bulletPool = bulletPool;
         this.explosionPool = explosionPool;
         this.worldBounds = worldBounds;
-        this.shootSound = sound;
+        shootSound = sound;
         speedVector = new Vector2();
         moveVector = new Vector2();
         bulletSpeed = new Vector2();
@@ -81,7 +81,7 @@ public class Ship extends Sprite {
     private void shoot() {
         Bullet bullet = bulletPool.obtain();
         bullet.set(this, bulletRegion, bulletPosition, bulletSpeed, bulletHeight, worldBounds, bulletDamage);
-        shootSound.play(0.3f);
+        shootSound.play(0.1f);
     }
 
     public void damage(int bulletDamage) {
@@ -96,6 +96,10 @@ public class Ship extends Sprite {
 
     public int getBulletDamage() {
         return bulletDamage;
+    }
+
+    public int getHp() {
+        return hp;
     }
 
     protected void autoShoot(float delta) {

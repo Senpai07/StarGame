@@ -37,8 +37,8 @@ public class MainShip extends Ship {
         bulletDamage = 1;
         reloadInterval = 0.2f;
         reloadTimer = reloadInterval;
-        hp = HP;
         shootSound = Gdx.audio.newSound(Gdx.files.internal("sounds/laser.wav"));
+        startNewGame();
     }
 
     @Override
@@ -64,14 +64,16 @@ public class MainShip extends Ship {
             }
         } else {
             pos.mulAdd(speedVector, delta);
-            if (getLeft() < worldBounds.getLeft()) {
-                moveStop();
-                setLeft(worldBounds.getLeft());
-            }
-            if (getRight() > worldBounds.getRight()) {
-                moveStop();
-                setRight(worldBounds.getRight());
-            }
+        }
+        if (getLeft() < worldBounds.getLeft()) {
+            startTouchMove = false;
+            moveStop();
+            setLeft(worldBounds.getLeft());
+        }
+        if (getRight() > worldBounds.getRight()) {
+            startTouchMove = false;
+            moveStop();
+            setRight(worldBounds.getRight());
         }
     }
 
@@ -87,10 +89,15 @@ public class MainShip extends Ship {
         );
     }
 
-    public void getStarted() {
+    public void startNewGame() {
         moveStop();
+        flushDestroy();
+        pressedLeft = false;
+        pressedRight = false;
         hp = HP;
-        setBottom(worldBounds.getBottom() + MARGIN);
+        if (worldBounds != null) {
+            this.pos.set(0f, worldBounds.getBottom() + this.getHalfHeight() + MARGIN);
+        }
     }
 
     @Override

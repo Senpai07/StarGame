@@ -5,10 +5,12 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Align;
 
 import java.util.List;
 
 import ru.geekbrains.base.BaseScreen;
+import ru.geekbrains.base.Font;
 import ru.geekbrains.math.Rect;
 import ru.geekbrains.pools.AlienShipPool;
 import ru.geekbrains.pools.BulletPool;
@@ -23,6 +25,12 @@ import ru.geekbrains.sprites.Star;
 import ru.geekbrains.utils.AlienEmitter;
 
 public class GameScreen extends BaseScreen {
+
+    private static final float FONT_SIZE = 0.02f;
+    private static final float TEXT_MARGIN = 0.01f;
+    private static final String FRAGS = "Frags: ";
+    private static final String HP = "HP: ";
+    private static final String LEVEL = "Level: ";
 
     private enum State {PLAYING, GAME_OVER}
 
@@ -40,6 +48,11 @@ public class GameScreen extends BaseScreen {
     private State state;
     private GameOver gameOver;
     private ButtonNewGame buttonNewGame;
+    private int frags;
+    private Font font;
+    private StringBuilder sbFrags;
+    private StringBuilder sbHp;
+    private StringBuilder sbLevel;
 
     @Override
     public void show() {
@@ -61,6 +74,10 @@ public class GameScreen extends BaseScreen {
         alienEmitter = new AlienEmitter(mainAtlas, alienShipPool);
         gameOver = new GameOver(mainAtlas);
         buttonNewGame = new ButtonNewGame(mainAtlas, this);
+        font = new Font("font/font.fnt", "font/font.png");
+        sbFrags = new StringBuilder();
+        sbHp = new StringBuilder();
+        sbLevel = new StringBuilder();
         music = Gdx.audio.newMusic(Gdx.files.internal("sounds/music.mp3"));
         music.setLooping(true);
         music.play();
@@ -77,6 +94,7 @@ public class GameScreen extends BaseScreen {
         alienEmitter.resize(worldBounds);
         gameOver.resize(worldBounds);
         buttonNewGame.resize(worldBounds);
+        font.setSize(FONT_SIZE);
     }
 
     @Override
@@ -97,8 +115,11 @@ public class GameScreen extends BaseScreen {
             mainShip.update(delta);
             bulletPool.updateActiveSprites(delta);
             alienShipPool.updateActiveSprites(delta);
-            alienEmitter.generate(delta);
+            alienEmitter.generate(delta, frags);
+        } else if (state == State.GAME_OVER) {
+            buttonNewGame.update(delta);
         }
+
     }
 
     private void checkCollision() {
@@ -121,6 +142,9 @@ public class GameScreen extends BaseScreen {
                 if (alienShip.isBulletCollision(bullet)) {
                     alienShip.damage(bullet.getDamage());
                     bullet.destroy();
+                    if (alienShip.isDestroyed()) {
+                        frags += 1;
+                    }
                 }
             }
         }
@@ -135,12 +159,6 @@ public class GameScreen extends BaseScreen {
         }
         if (mainShip.isDestroyed()) {
             state = State.GAME_OVER;
-            for (AlienShip alienShip : alienList) {
-                alienShip.destroy();
-            }
-            for (Bullet bullet : bulletList) {
-                bullet.destroy();
-            }
         }
     }
 
@@ -165,9 +183,25 @@ public class GameScreen extends BaseScreen {
             buttonNewGame.draw(batch);
         }
         explosionPool.drawActiveSprites(batch);
+        printInfo();
         batch.end();
     }
 
+    private void printInfo() {
+        sbFrags.setLength(0);
+        sbHp.setLength(0);
+        sbLevel.setLength(0);
+        font.draw(batch, sbFrags.append(FRAGS).append(frags),
+                worldBounds.getLeft() + TEXT_MARGIN,
+                worldBounds.getTop() - TEXT_MARGIN);
+        font.draw(batch, sbHp.append(HP).append(mainShip.getHp()),
+                worldBounds.pos.x,
+                worldBounds.getTop() - TEXT_MARGIN, Align.center);
+        font.draw(batch, sbLevel.append(LEVEL).append(alienEmitter.getLevel()),
+                worldBounds.getRight() - TEXT_MARGIN,
+                worldBounds.getTop() - TEXT_MARGIN, Align.right);
+        font.draw(batch, String.valueOf(mainShip.getHp()), mainShip.pos.x, mainShip.pos.y, Align.center);
+    }
 
     @Override
     public void dispose() {
@@ -178,6 +212,7 @@ public class GameScreen extends BaseScreen {
         alienShipPool.dispose();
         music.dispose();
         mainShip.dispose();
+        font.dispose();
         super.dispose();
     }
 
@@ -226,8 +261,11 @@ public class GameScreen extends BaseScreen {
     }
 
     public void startNewGame() {
-        mainShip.flushDestroy();
-        mainShip.getStarted();
+        frags = 0;
+        mainShip.startNewGame();
+        bulletPool.freeAllActiveObject();
+        alienShipPool.freeAllActiveObject();
+        explosionPool.freeAllActiveObject();
         state = State.PLAYING;
     }
 }
